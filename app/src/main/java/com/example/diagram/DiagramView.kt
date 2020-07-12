@@ -1,10 +1,7 @@
 package com.example.diagram
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -26,6 +23,7 @@ class DiagramView @JvmOverloads constructor(
     private var mSectorsList = mutableListOf<Sector>()
 
     private val mMainTextPaint : Paint = Paint()
+    private val mSecondaryTextPaint : Paint = Paint()
     private var mInnerCirclePaint: Paint = Paint()
 
     private var mInnerRadius by Delegates.notNull<Float>()
@@ -40,6 +38,7 @@ class DiagramView @JvmOverloads constructor(
     private var mTotalBounds: RectF
     private var mStandartBounds: RectF
     private var mSelectedBounds: RectF
+    private var mMainTextBounds: Rect
 
     private var mGestureDetector: GestureDetector
 
@@ -50,16 +49,23 @@ class DiagramView @JvmOverloads constructor(
         mMainTextPaint.isAntiAlias = true
         mMainTextPaint.textSize = resources.getDimensionPixelSize(R.dimen.main_text_size).toFloat()
 
+        mSecondaryTextPaint.color = Color.BLACK
+        mSecondaryTextPaint.textAlign = Paint.Align.CENTER
+        mSecondaryTextPaint.isAntiAlias = true
+        mSecondaryTextPaint.textSize = resources.getDimensionPixelSize(R.dimen.secondary_text_size).toFloat()
+
+
+
         mInnerCirclePaint.color = Color.WHITE
         mInnerCirclePaint.style = Paint.Style.FILL
         mInnerCirclePaint.isAntiAlias = true
 
         mSectorsList = ArrayList<Sector>(5)
-        mSectorsList.add(Sector(5f, ContextCompat.getColor(context, R.color.chart_1)))
-        mSectorsList.add(Sector(30f, ContextCompat.getColor(context, R.color.chart_2)))
-        mSectorsList.add(Sector(15f, ContextCompat.getColor(context, R.color.chart_3)))
-        mSectorsList.add(Sector(40f, ContextCompat.getColor(context, R.color.chart_4)))
-        mSectorsList.add(Sector(10f, ContextCompat.getColor(context, R.color.chart_5)))
+        mSectorsList.add(Sector(5f,  "Company A",ContextCompat.getColor(context, R.color.chart_1)))
+        mSectorsList.add(Sector(30f, "Company B", ContextCompat.getColor(context, R.color.chart_2)))
+        mSectorsList.add(Sector(15f, "Company C", ContextCompat.getColor(context, R.color.chart_3)))
+        mSectorsList.add(Sector(40f, "Company D", ContextCompat.getColor(context, R.color.chart_4)))
+        mSectorsList.add(Sector(10f, "Company E",ContextCompat.getColor(context, R.color.chart_5)))
 
         for (sector in mSectorsList) {
             mAllValueSum += sector.mValue
@@ -72,6 +78,7 @@ class DiagramView @JvmOverloads constructor(
         mStandartBounds = RectF()
         mTotalBounds = RectF()
         mSelectedBounds = RectF()
+        mMainTextBounds = Rect()
 
         mGestureDetector = GestureDetector(context,
             object : GestureDetector.SimpleOnGestureListener() {
@@ -88,6 +95,8 @@ class DiagramView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         mInnerRadius = mMainTextPaint.measureText("100 %")
         mDiameter = (mInnerRadius * 4).toInt()
+
+        mMainTextPaint.getTextBounds("1", 0, 1, mMainTextBounds)
 
         val mW = resolveSize(mDiameter, widthMeasureSpec)
         val mH = resolveSize(mDiameter, heightMeasureSpec)
@@ -133,6 +142,7 @@ class DiagramView @JvmOverloads constructor(
         canvas?.drawCircle(cx, cy, mInnerRadius, mInnerCirclePaint)
         canvas?.restore()
         canvas?.drawText(mSectorsList[mSelectedIndex].getPercent(), cx,cy, mMainTextPaint)
+        canvas?.drawText(mSectorsList[mSelectedIndex].getName(), cx,cy + mMainTextBounds.height(), mSecondaryTextPaint)
     }
 
 
@@ -171,6 +181,7 @@ class DiagramView @JvmOverloads constructor(
 
     private class Sector constructor(
         val mValue : Float,
+        val mName : String,
         mColor : Int
     ){
         private val mPaint: Paint = Paint()
@@ -200,6 +211,10 @@ class DiagramView @JvmOverloads constructor(
 
         internal fun getPercent() : String{
             return String.format(Locale.ENGLISH, "%.1f%%", mPercent)
+        }
+
+        internal fun getName() : String{
+            return mName
         }
 
         internal fun isAngleInSector(tappedAngle : Float) : Boolean{
