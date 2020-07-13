@@ -1,8 +1,8 @@
 # Custom view: Круговая диаграмма.
 При нажатии на сектор он “выезжает”, визуально отличаясь от других секторов. Так же при нажатии на сектор в центре диаграммы появляются значения, привязанные к этому сектору.
 
-![1 1](https://user-images.githubusercontent.com/68185628/87340709-2317b300-c551-11ea-8144-8a8def9a46a4.png)
-![2 1](https://user-images.githubusercontent.com/68185628/87340553-e350cb80-c550-11ea-80d3-b857ce4c1668.png)
+![1](https://user-images.githubusercontent.com/68185628/87340974-8570b380-c551-11ea-834c-1fda8885225b.png)
+![2](https://user-images.githubusercontent.com/68185628/87340976-86094a00-c551-11ea-9e95-22c674defab6.png)
 
 
 
